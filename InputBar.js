@@ -20,11 +20,21 @@ export default class InputBar extends Component {
   }
 
   render() {
-
+      var barContent;
+      if(this.props.hideInput){
+        barContent =
+            <View style={styles.centerInputBar}>
+              <Text style={styles.inputBarText}>
+                {"Waiting on "+this.props.guest}
+              </Text>
+            </View>;
+      }else{
+        barContent = <MyInput type="gameInput" text="Type A Word!" ref="myInput" fin={this.props.onSubmit} focusFunc={()=>{}} blurFunc={()=>{}}/>;
+      }
       return(
           <View>
             <View style={styles.inputView}>
-            <MyInput type="gameInput" text="Type A Word!" ref="myInput" fin={this.props.onSubmit} focusFunc={()=>{}} blurFunc={()=>{}}/>
+              {barContent}
             </View>
             <View style={styles.inputBoxShadow}>
             </View>

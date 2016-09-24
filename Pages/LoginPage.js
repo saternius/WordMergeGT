@@ -20,7 +20,6 @@ export default class LoginPage extends Component {
     this.focusOnNextValid = function(){
       for(var i=ctx.inputs.length-1; i>-1; i--){
         if(ctx.refs[ctx.inputs[i]].state.text === ctx.refs[ctx.inputs[i]].state.placeholder){
-          console.log(ctx.inputs[i]);
           ctx.refs[ctx.inputs[i]].clearAndFocus();
         }
       }

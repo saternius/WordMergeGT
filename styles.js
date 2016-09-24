@@ -384,7 +384,8 @@ module.exports = StyleSheet.create({
     top:80,
   },
   gameBGColor:{
-    backgroundColor: "#c9f5f5",
+    backgroundColor:"#c2eded",
+  //  backgroundColor: "#c9f5f5",
   },
   guestBarView:{
     backgroundColor: "#2f4f4d",
@@ -502,9 +503,22 @@ module.exports = StyleSheet.create({
   centerContent:{
     position:"absolute",
     left:0,
-    top:0,
+    top:172,
     zIndex:999,
     height:70,
+    paddingRight:10,
+    paddingTop:10,
+    paddingBottom:10,
+    paddingLeft:0,
+    width:200,
+  },
+  centerGuestContent:{
+//    backgroundColor:"rgba(255,0,0,.2)",
+    position:"absolute",
+    left:0,
+    top:0,
+    zIndex:999,
+    height:240,
     paddingRight:10,
     paddingTop:10,
     paddingBottom:10,
@@ -538,7 +552,6 @@ module.exports = StyleSheet.create({
     fontWeight:"bold",
   },
   bubbleContainer:{
-    backgroundColor:"pink",
     position:"absolute",
     width:180,
     height:240,
@@ -558,13 +571,70 @@ module.exports = StyleSheet.create({
     justifyContent: 'flex-end'
   },
   fullBubbleContainer:{
+  //  backgroundColor: "#c9f5f5",
+  //  backgroundColor:"#c2eded",
     position:"absolute",
-    zIndex:1000,
-    backgroundColor:"orange",
-    top:300,
+    zIndex:1,
+    top:305,
     left:0,
     width:360,
-    height:240,
+    height:235,
     flexDirection:"row",
+  },
+  fullGuestBubbleContainer:{
+  //  backgroundColor: "#c9f5f5",
+  //  backgroundColor:"#c2eded",
+    position:"absolute",
+    zIndex:1,
+    top:100,
+    left:0,
+    width:360,
+    height:235,
+    flexDirection:"row",
+  },
+  guestTypeContainer:{
+    position:"absolute",
+    top:70,
+    left:0,
+    zIndex:999,
+    width:360,
+    backgroundColor:"#c2eded",
+  },
+  guestTypeText:{
+    fontSize:20,
+    fontFamily:"Trebuchet",
+    fontWeight:"bold",
+    color:"#75999c",
+
+  },
+  hiddenGameText:{
+    color:"#c9f5f5"
+  },
+  centerInputBar:{
+  //  backgroundColor:"red",
+    flexDirection:"row",
+    justifyContent:"center",
+    top:14,
+  },
+  inputBarText:{
+    fontSize:26,
+    fontFamily:"Trebuchet",
+    color:"#f7ffff",
+    fontWeight:"bold",
+    textShadowColor:"#171f1f",
+    textShadowOffset:{width:1,height:1},
+    textShadowRadius:10,
+
+  },
+  transparent:{
+    backgroundColor:"transparent",
+  },
+  flasher:{
+    width:360,
+    height:620,
+    position:"absolute",
+    backgroundColor:"#c9f5f5",
+    zIndex:0,
   }
+
 });
