@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { View, Text, TouchableHighlight,Navigator, Image, TouchableOpacity,Animated } from 'react-native';
+import { View, Text, TouchableHighlight,Navigator, Image, TouchableOpacity, Animated, ScrollView } from 'react-native';
 import NavigationBar from '../NavigationBar';
 import Button from '../Button';
 import GuestBar from '../GuestBar';
@@ -8,6 +8,7 @@ import TimeBar from '../TimeBar';
 import WordContainer from '../WordContainer';
 import WordBubble from '../WordBubble';
 import Flasher from '../Flasher';
+import Hangman from '../Hangman';
 var styles = require('../styles');
 
 export default class LobbyAny extends Component {
@@ -20,33 +21,106 @@ export default class LobbyAny extends Component {
         guestTyping:false,
         wordRecieved:false,
         submittedWord:false,
-
+        totGuestShift:0,
+        totMyShift:0,
     }
 
 
-    var shiftBubbles = (myWords,preTag)=>{
+
+    var shiftBubbles = (myWords,p)=>{
+
       if(myWords.length<=1){
         return;
       }
       var margin = 5;
+      var preTag = p?"bub_":"gBub_";
+      var oTag = (!p)?"bub_":"gBub_";
       var lastBubble = this.refs[preTag+(myWords.length-1)];
+      var gBubble = this.refs[oTag+(myWords.length-1)];
+      var gShift = gBubble.getBubbleWidth()+margin;
       var xShift = lastBubble.getBubbleWidth()+margin;
+
+      if(p){
+        this.state.totMyShift+=(xShift+18);
+      }else{
+        this.state.totGuestShift+=(gShift+18);
+      }
+
       for(var i=0; i<myWords.length-1;i++){
         var index = (i+1);
         var bubble = this.refs[preTag+index];
-        var newX = bubble.state.x+xShift;
-
-        Animated.spring(
-         bubble.state.xShift,
-         {
-           toValue: -newX,
-           friction: 6,
-         }
-        ).start();
-        bubble.setState({x:newX})
+        var g_bubble = this.refs[oTag+index];
+        var newX = Math.max(bubble.state.x+xShift,g_bubble.state.x+gShift);
+        if(!bubble.shifted){
+            this.animateBubbleShift(bubble, g_bubble, newX);
+        }
+        bubble.shifted = !bubble.shifted;
+        g_bubble.shifted = !g_bubble.shifted;
       }
     }
 
+    this.animateBubbleShift = (bubble, g_bubble, newX)=>{
+      Animated.spring(
+       bubble.state.xShift,
+       {
+         toValue: -newX,
+         friction: 6,
+       }
+      ).start();
+
+      Animated.spring(
+       g_bubble.state.xShift,
+       {
+         toValue: -newX,
+         friction: 6,
+       }
+      ).start();
+
+      bubble.setState({x:newX});
+      g_bubble.setState({x:newX});
+    }
+
+
+    this.handleLoss = ()=>{
+      console.log("YOU LOSE!");
+      setTimeout(()=>{
+
+        //adding lose bubbles
+        var w = "YOU LOST";
+        var details = {
+          id:69,
+          word:w,
+          x:0,
+          color: "rgb(180,0,0)",
+          shadowColor: "rgb(60,0,0)",
+          hide: false,
+        }
+
+
+
+
+        var gD = details;
+        gD["y"] = (160);
+        this.state.guestWords.push(gD);
+
+        var myD = JSON.parse(JSON.stringify(details));
+        myD["y"] = (-160);
+        this.state.myWords.push(myD);
+
+        this.setState({
+          guestWords:this.state.guestWords,
+          myWords:this.state.myWords,
+        });
+        shiftBubbles(this.state.guestWords,false);
+        shiftBubbles(this.state.myWords,true);
+
+
+        setTimeout(()=>{
+          this.props.nav("Results",{friend:this.props.friend,won:false});
+        },1000);
+
+      },1500);
+    }
 
 
     var handleIfWordsMatch = ()=>{
@@ -57,6 +131,22 @@ export default class LobbyAny extends Component {
           this.refs["flasher"].flashFailure();
       }
 
+
+
+      if(this.state.numWords<5){
+        if(this.simulatedGame!=null){
+          this.simulatedGame.nextRound();
+        }
+        this.setState({
+          guestTyping:false,
+          wordRecieved:false,
+          submittedWord:false,
+          numWords:(this.state.numWords+1),
+        })
+      }else{
+        this.handleLoss();
+      }
+
     }
 
     var revealAndCheckMatch = ()=>{
@@ -64,15 +154,10 @@ export default class LobbyAny extends Component {
       if(guestBubble!==undefined){
         guestBubble.setState({hide:false});
       }
-      this.refs["timeBar"].setState({timeLeft:600});
+      this.refs["timeBar"].resetTimer();
 
       handleIfWordsMatch();
-      this.setState({
-        guestTyping:false,
-        wordRecieved:false,
-        submittedWord:false,
-        numWords:(this.state.numWords+1),
-      })
+
     }
 
     var updateState = (p)=>{
@@ -99,23 +184,20 @@ export default class LobbyAny extends Component {
         id:(nW+1),
         word:w,
         x:0,
-        y:(19*nW)*yDir-5,
-        color: "rgb("+(222-nW*3)+","+(222-nW*22)+","+Math.max(0,130-nW*15)+")",
-        shadowColor: "rgb("+(170-nW*3)+","+(170-nW*22)+","+Math.max(0,130-nW*15)+")",
+        y:(25*nW)*yDir-5,
+        color: "rgb("+(222-nW*6)+","+(222-nW*38)+","+Math.max(0,130-nW*25)+")",
+        shadowColor: "rgb("+(170-nW*6)+","+(170-nW*38)+","+Math.max(0,130-nW*25)+")",
         hide: h,
       })
 
+      shiftBubbles(wordArray,p);
       updateState(p);
 
       if((p && this.state.wordRecieved)||(!p && this.state.submittedWord)){
         revealAndCheckMatch();
       }
 
-      if(p){
-          shiftBubbles(wordArray,"bub_");
-      }else{
-          shiftBubbles(this.state.guestWords,"gBub_");
-      }
+
     }
 
 
@@ -137,24 +219,34 @@ export default class LobbyAny extends Component {
     }
 
 
-    this.simulateGame = ()=>{
+    var ctx = this;
+    var simulateGame = (function(){
 
       var startTyping = ()=>{
-        this.guestStartsTyping();
+        ctx.guestStartsTyping();
       }
 
       var stopTyping = ()=>{
-        this.guestStopsTyping();
+        ctx.guestStopsTyping();
       }
 
-      setTimeout(startTyping,200);
-      setTimeout(stopTyping,350);
-      setTimeout(startTyping,470);
-      setTimeout(()=>{this.recieveWord("Lamborghini")},600);
+      setTimeout(startTyping,2000);
+      setTimeout(stopTyping,3500);
+      setTimeout(startTyping,4700);
+      var lopezWords = ["Lamborghini","Garage","books","knowledge","power","Hollywood","tedXTalks","47$","fuelUnit","mentors"];
 
-    }
+      setTimeout(()=>{ctx.recieveWord(lopezWords[0])},6000);
+      var i=0;
+      this.nextRound = ()=>{
+        setTimeout(startTyping,4000);
+        setTimeout(()=>{ctx.recieveWord(lopezWords[i])},5500);
+        i++;
+      }
 
-    this.simulateGame();
+
+    });
+
+    this.simulatedGame = new simulateGame();
   }
 
 
@@ -165,48 +257,58 @@ export default class LobbyAny extends Component {
 
     var guestActionStyle = [styles.guestTypeContainer];
     var guestActionTextStyle = [styles.guestTypeText];
-    var guestFullContainerStyle = [styles.fullGuestBubbleContainer];
+    var guestFullContainerStyle = [styles.fullGuestBubbleContainer,{position:"relative",width:360,height:232,top:0,right:0,zIndex:10}];
+    var myFullContainerStyle = [styles.fullBubbleContainer,{position:"absolute",width:360,height:232,top:232,right:0,zIndex:10}];
     var typing=this.state.guestTyping;
     var guestText = this.props.friend.name + " is typing...";
     if(typing){
-      guestFullContainerStyle.push({top:100});
+      guestFullContainerStyle.push({top:20});
     }else{
       guestActionTextStyle.push(styles.hiddenGameText);
       guestText = "";
-      guestFullContainerStyle.push({top:70});
+      guestFullContainerStyle.push({top:0});
     }
 
+    var topWidth = Math.max(this.state.totGuestShift+180,this.state.totMyShift+180,360);
+    guestFullContainerStyle.push({width:topWidth});
+    myFullContainerStyle.push({width:topWidth});
     return (
         <View style={{width:360,height:620}}>
 
           <Flasher ref="flasher"/>
+          <GuestBar profileDetails={this.props.friend}/>
+          <View style={guestActionStyle}>
+            <Text style={guestActionTextStyle}>
+              {guestText}
+            </Text>
+          </View>
+            <Hangman/>
+          <ScrollView ref="bubbleScroller" horizontal={true} style={[styles.gameBody,{position:"absolute",width:360,height:640,padding:0}]} contentContainerStyle={{}}
+          onContentSizeChange={(contentWidth, contentHeight)=>{
+            this.refs["bubbleScroller"].scrollTo({x:contentWidth});
+          }}>
 
-          <View style={[styles.body,styles.transparent]}>
-            <GuestBar profileDetails={this.props.friend}/>
-            <View style={guestActionStyle}>
-              <Text style={guestActionTextStyle}>
-                {guestText}
-              </Text>
-            </View>
 
-            <View style={guestFullContainerStyle}>
+           <View style={guestFullContainerStyle}>
               {
                 this.state.guestWords.map((word) => (
                   <WordBubble ref={"gBub_"+word.id} key={"gBubble_"+word.id} word={word.word} num={this.state.numWords} x={word.x} y={word.y} color={word.color} shadowColor={word.shadowColor} id={word.id} guest={true} hide={word.hide}/>
                 ))
               }
-            </View>
+           </View>
 
-            <View style={styles.fullBubbleContainer}>
+           <View style={myFullContainerStyle}>
             {
               this.state.myWords.map((word) => (
                 <WordBubble ref={"bub_"+word.id} key={"bubble_"+word.id} word={word.word} num={this.state.numWords} x={word.x} y={word.y} color={word.color} shadowColor={word.shadowColor} id={word.id} guest={false}/>
               ))
             }
-            </View>
-            <TimeBar ref="timeBar"/>
-            <InputBar ref="myInput" onSubmit={this.submitWord} hideInput={this.state.submittedWord} guest={this.props.friend.name}/>
           </View>
+
+          </ScrollView>
+
+          <TimeBar ref="timeBar"/>
+          <InputBar ref="myInput" onSubmit={this.submitWord} hideInput={this.state.submittedWord} guest={this.props.friend.name}/>
         </View>
       )
   }

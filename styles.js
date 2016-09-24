@@ -432,16 +432,13 @@ module.exports = StyleSheet.create({
     zIndex:69,
     width:360,
     height:70,
+    top:5,
     backgroundColor:"#2f4f4c",
-    top:480,
-    left:-180,
   },
   inputBoxShadow:{
     position:"absolute",
     width:360,
     height:10,
-    top:474,
-    left:-180,
     backgroundColor: "#13453e",
   },
   gameInputView:{
@@ -626,8 +623,10 @@ module.exports = StyleSheet.create({
     textShadowRadius:10,
 
   },
-  transparent:{
+  gameBody:{
     backgroundColor:"transparent",
+		flex:1,
+    position: "relative"
   },
   flasher:{
     width:360,

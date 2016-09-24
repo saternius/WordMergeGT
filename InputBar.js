@@ -32,7 +32,7 @@ export default class InputBar extends Component {
         barContent = <MyInput type="gameInput" text="Type A Word!" ref="myInput" fin={this.props.onSubmit} focusFunc={()=>{}} blurFunc={()=>{}}/>;
       }
       return(
-          <View>
+          <View style={{position:"absolute",width:360,height:80,top:545,left:0}}>
             <View style={styles.inputView}>
               {barContent}
             </View>
