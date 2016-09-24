@@ -19,7 +19,6 @@ import FriendsPage from './Pages/FriendsPage';
 import AchievementsPage from './Pages/AchievementsPage';
 import InstructionsPage from './Pages/InstructionsPage';
 import GamePage from './Pages/GamePage';
-import ResultPage from './Pages/ResultPage';
 
 var styles = require('./styles');
 
@@ -29,7 +28,7 @@ class AwesomeProject extends Component {
     return (
        <Navigator
           initialRoute={{
-            page: "Home",
+            page: "GamePage",
             data:{ id: 1, name: 'Tai Lopez', wins: '27', pic: require('./images/tai.png') }
         }}
           renderScene={(route, navigator) => {
@@ -76,8 +75,6 @@ class AwesomeProject extends Component {
                 return (<InstructionsPage nav={navigate} back={back}/>);
             case "GamePage":
                 return (<GamePage nav={navigate} back={back} friend={route.data}/>);
-            case "Results":
-                return (<ResultPage nav={navigate} friend={route.data.friend} won={route.data.won}/>);
             default:
                 return(<StartPage nav={navigate} back={back}/>);
           }

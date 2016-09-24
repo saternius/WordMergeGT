@@ -21,8 +21,8 @@ export default class NavigationBar extends Component {
           <View>
             <View style={styles.guestBarView}>
               <View>
-                <Image style={[styles.guestBarImage,{borderRadius:10}]} source={this.props.profileDetails.pic}/>
-
+                <Image style={styles.guestBarImage} source={this.props.profileDetails.pic}/>
+                <Image style={styles.guestCircleShadow} source={require('./images/darkCircleShadow.png')}/>
               </View>
               <View>
                 <Text style={guestTextStyle}>{this.props.profileDetails.name+" ("+this.props.profileDetails.wins+")"}</Text>

@@ -34,6 +34,7 @@ export default class Flasher extends Component {
           }
 
         ]}>
+
         </Animated.View>
         )
       }

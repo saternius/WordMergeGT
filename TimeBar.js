@@ -5,24 +5,20 @@ var nav;
 export default class TimeBar extends Component {
   constructor(props){
     super(props);
-    this.fullTime = 300;
     this.state = {
-      timeLeft:this.fullTime,
+      timeLeft:600,
     }
     var tickDown = ()=>{
       var newState = this.state.timeLeft-1;
       this.setState({timeLeft:newState});
-    }
-    this.resetTimer = ()=>{
-      this.setState({timeLeft:this.fullTime})
     }
 
     setInterval(tickDown,100);
   }
 
   render() {
-      var dW = Math.floor(360*(this.state.timeLeft/this.fullTime));
-
+      var dW = Math.floor(360*(this.state.timeLeft/600));
+      
       var dStyle = StyleSheet.create({
         fillWidth: {
           width: dW,

@@ -17,10 +17,7 @@ export default class WordBubble extends Component {
 				shadowColor:this.props.shadowColor,
 				hide: this.props.hide,
 				guest:this.props.guest,
-				shifted:false,
 			}
-
-			this.shifted = false;
 
 			this.getBubbleWidth = ()=>{
 				return this.bubbleWidth;
@@ -52,24 +49,7 @@ export default class WordBubble extends Component {
 		var containerStyle = [styles.bubbleContainer];
 		var bubblePosStyle = this.props.guest?[styles.centerGuestContent]:[styles.centerContent];
 		var wordDisp = this.state.hide?"?????":this.props.word;
-		var pic = this.state.guest?require('./images/arrowHeadDown.png'):require('./images/arrowHeadUp.png');
-		var picStyle = this.state.guest?{
-			position:"absolute",
-			width:20,
-			height:20,
-			left:23,
-			top:51,
-			zIndex:10,
-		}:{
-			position:"absolute",
-			width:20,
-			height:20,
-			left:23,
-			top:171,
-			zIndex:10,
-		};
 
-	//	console.log(this.state.yShift._value+":"+this.state.xShift._value);
     return (
 			<Animated.View style={[containerStyle,
 				{
@@ -87,10 +67,6 @@ export default class WordBubble extends Component {
 					<View style={bubbleStyle} elevation={6}>
 		    		<Text style={bubbleTextStyle}>{wordDisp}</Text>
 		    	</View>
-	    	</View>
-
-				<View>
-	    	<Image style={picStyle} source={pic}/>
 	    	</View>
 			</Animated.View>
       )
